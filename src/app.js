@@ -13,6 +13,11 @@ app.use(express.json({limit:'16kb'}));
 app.use(express.urlencoded({extended:true,limit:'1024kb'}));
 app.use(express.static("public"));
 
+app.get('/',(_,res)=>{
+    res.status(200).json({
+        message:"Success"
+    })
+})
 app.use('/api/v1',require('./routes/index'));
 
 app.use(errorMiddleware);
