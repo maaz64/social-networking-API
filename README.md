@@ -4,6 +4,9 @@
 ## Overview
 This is a RESTful API for a social networking platform developed using Express.js and MongoDB. It implements token-based authentication and authorization using JSON Web Tokens (JWT) and password encryption using bcrypt. The API supports three main models: User, Post, and Follower.
 
+## Hosted Link
+- https://social-networking-api-lemon.vercel.app/
+
 ## Features
 - User authentication and authorization with JWT
 - Post management (create, read, update, delete)
