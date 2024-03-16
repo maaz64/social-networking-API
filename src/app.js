@@ -1,5 +1,6 @@
 const express = require ('express');
 const app = express();
+require('dotenv').config();
 const passportJWT = require('./config/passport-jwt');
 const errorMiddleware = require('./middleware/errorMiddleware');
 const cors = require('cors');
