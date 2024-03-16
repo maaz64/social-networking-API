@@ -5,7 +5,6 @@ const { ApiResponse } = require("../utils/ApiResponse");
 
 const signUp = async (req, res, next) => {
   const { fullName, username, bio, password, confirm_password } = req.body;
-  console.log(`${fullName} ${username} ${bio} ${password} ${confirm_password}`);
   try {
     if (
       [fullName, username, bio, password, confirm_password].some(
@@ -26,7 +25,6 @@ const signUp = async (req, res, next) => {
     }
 
     const profilePicLocalPath = req.file?.path;
-    console.log(profilePicLocalPath);
     if (!profilePicLocalPath) {
       return next(new ApiError(400, "Profile picture is required"));
     }
@@ -109,9 +107,84 @@ const login = async (req, res, next) => {
   }
 };
 
+const getAUserFollowerAndFollowing = async(req,res)=>{
+
+  try {
+      const {username} = req.query;
+    
+      if(!username?.trim()){
+        return next(new ApiError(400,'username is missing'))
+      }
+    
+      const userProfile = await User.aggregate([
+        {
+          $match :{
+            username : username?.toLowerCase()
+          }
+        },
+        {
+          $lookup:{
+            from: "followers",
+            localField:'_id',
+            foreignField:'following',
+            as : "followers"
+          }
+        },
+        {
+          $lookup:{
+            from: "followers",
+            localField:'_id',
+            foreignField:'follower',
+            as : "followings"
+          }
+        },
+        {
+          $addFields:{
+            followerCount : {
+              $size : "$followers"
+            },
+            followingCount : {
+              $size : "$followings"
+            },
+            isFollowed:{
+              $cond:{
+                if:{$in: [req.user?._id, "$followers.follower"]},
+                then: true,
+                else: false
+              }
+            }
+          }
+        },
+        {
+          $project:{
+            fullName : 1,
+            username: 1,
+            followerCount :1,
+            followingCount : 1,
+            isFollowed :1 ,
+            profile_pic : 1,
+            bio : 1
+    
+          }
+        }
+      ]);
+    
+      if(!userProfile?.length){
+        return next(new ApiError(404, 'User not found'))
+      }
+    
+      return res.status(200).json(ApiResponse(true,userProfile[0], "user profile fetched successfully"))
+  } catch (error) {
+    return next(new ApiError(500, 'Something went wrong while fetching user detail'))
+    
+  }
+  
+  }
+
 module.exports =
 {
   signUp ,
   login,
+  getAUserFollowerAndFollowing
 
 };
