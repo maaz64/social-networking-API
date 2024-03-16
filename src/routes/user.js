@@ -1,7 +1,7 @@
 const express = require ('express');
 const upload = require('../middleware/multerMiddleware');
 const passport = require('passport')
-const { signUp, login, getAUserFollowerAndFollowing } = require('../Controller/userController');
+const { signUp, login, getAUserFollowerAndFollowing } = require('../controller/userController');
 const router = express.Router();
 
 
